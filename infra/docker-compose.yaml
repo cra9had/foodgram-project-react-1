@@ -6,14 +6,26 @@ services:
       - /var/lib/postgresql/data/
     env_file:
       - ./.env
-
-  frontend:
-    image: di68995/foodgram_frontend:1_0
+  
+   web:
+    image: di68995/foodgram_backend:latest
     restart: always
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+  
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
-      - backend
+      - web
 
   nginx:
     image: nginx:1.19.3
@@ -25,25 +37,11 @@ services:
       - ./docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
-    restart: always
     depends_on:
+      - web
       - frontend
-
-  backend:
-    image: di68995/foodgram_backend:1_0
-    restart: always
-    volumes:
-      - static_value:/app_backend/static/
-      - media_value:/app_backend/media/
-    depends_on:
-      - db
-    env_file:
-      - ./.env
-    command: >
-      sh -c "python manage.py collectstatic --noinput &&
-             python manage.py migrate &&
-             gunicorn foodgram.wsgi:application --bind 0:8000"
 
 volumes:
   static_value:
   media_value:
+  dbdata:
