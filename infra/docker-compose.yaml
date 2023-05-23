@@ -20,6 +20,7 @@ services:
       - ./.env
   
   frontend:
+    run: cd ../frontend
     build:
       context: ../frontend
       dockerfile: Dockerfile
