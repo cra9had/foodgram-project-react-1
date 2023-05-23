@@ -70,7 +70,6 @@ jobs:
               echo DB_HOST=${{ secrets.DB_HOST }}
               echo DB_PORT=${{ secrets.DB_PORT }}
               echo SECRET_KEY=${{ secrets.SECRET_KEY }}
-              sudo kill $(sudo lsof -t -i:80)
               sudo docker-compose up --force-recreate -d
 
   send_message:
