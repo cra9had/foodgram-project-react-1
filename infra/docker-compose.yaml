@@ -7,7 +7,7 @@ services:
     env_file:
       - ./.env
   
-   web:
+  web:
     image: di68995/foodgram_backend:latest
     restart: always
     volumes:
