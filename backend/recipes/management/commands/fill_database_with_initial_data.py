@@ -22,16 +22,16 @@ class Command(BaseCommand):
                 )
 
         author_pavel = User.objects.create(
-            username="pavelpatsey",
-            first_name="Павел",
-            last_name="Пацей",
-            email="pavelpatsey@mail.ru",
+            username="proho",
+            first_name="Дмитрий",
+            last_name="Орловский",
+            email="prohojiy5@mail.ru",
         )
         author_lena = User.objects.create(
             username="lenaarhipova",
             first_name="Лена",
             last_name="Архипова",
-            email="lenaarhipova@mail.ru",
+            email="lenpova@mail.ru",
         )
 
         tag_breakfast = Tag.objects.create(
