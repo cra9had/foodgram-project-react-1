@@ -8,7 +8,7 @@ services:
       - ./.env
   
   frontend:
-    image: pavelpatsey/foodgram_frontend:latest
+    image: di68995/foodgram_frontend:latest
     restart: always
     volumes:
       - ../frontend/:/app/result_build/
@@ -30,7 +30,7 @@ services:
       - frontend
   
   backend:
-    image: pavelpatsey/foodgram_backend:1
+    image: di68995/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app_backend/static/
