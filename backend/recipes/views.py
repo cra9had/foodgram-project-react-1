@@ -66,6 +66,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         data = request.data
         data = copy.deepcopy(request.data)
+        if not request.data.get("image"): #по документации изображение обязательно, но в случае обновления рецепта изображение может не потребоваться
+            test_base64code = (
+                "R0lGODlhAgABAIAAAAAAAP///yH5BAAAAAAALAAAAAACAAEAAAICDAoAOw=="
+            )
+            data["image"] = test_base64code
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
