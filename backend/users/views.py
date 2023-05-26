@@ -13,7 +13,10 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all().order_by("id")
     pagination_class = UsersPagination
 
-    @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
+    @action(detail=True,
+            methods=["post", "delete"],
+            permission_classes=[IsAuthenticated]
+           )
     def subscribe(self, request, pk=None):
         author = self.get_object()
         user = request.user
@@ -52,7 +55,9 @@ class CustomUserViewSet(UserViewSet):
         else:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(detail=False, permission_classes=[IsAuthenticated])
+    @action(detail=False, 
+            permission_classes=[IsAuthenticated]
+           )
     def subscriptions(self, request):
         user = request.user
         subscribed_authors = user.subscribed_authors.all().order_by("id")
