@@ -13,36 +13,31 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all().order_by("id")
     pagination_class = UsersPagination
 
-    @action(
-        detail=True,
-        methods=["post", "delete"],
-        permission_classes=[IsAuthenticated],
-    )
-    def subscribe(self, request, id=None):
+    @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
+    def subscribe(self, request, pk=None):
+        author = self.get_object()
+        user = request.user
+
         if request.method == "POST":
-            user = request.user
-            author = self.get_object()
             if user == author:
                 data = {"errors": "Нельзя подписаться на самого себя"}
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            if Subscription.objects.filter(
-                user=user,
-                author=author,
-            ).exists():
-                data = {"errors": "Вы уже подписаны на данного пользователя"}
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            Subscription.objects.create(
+
+            subscription, created = Subscription.objects.get_or_create(
                 user=user,
                 author=author,
             )
+            if not created:
+                data = {"errors": "Вы уже подписаны на данного пользователя"}
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
             serializer = UserSubscriptionSerializer(
                 author,
                 context={"request": request},
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if request.method == "DELETE":
-            user = request.user
-            author = self.get_object()
+
+        elif request.method == "DELETE":
             subscription = Subscription.objects.filter(
                 user=user,
                 author=author,
@@ -50,22 +45,24 @@ class CustomUserViewSet(UserViewSet):
             if subscription.exists():
                 subscription.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
+
             data = {"errors": "Вы не подписаны на данного пользователя"}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(
-        detail=False,
-        permission_classes=[IsAuthenticated],
-    )
+        else:
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
-        subscribed_authors = User.objects.filter(
-            subscribed_authors__user=user
-        ).order_by("subscribed_authors")
+        subscribed_authors = user.subscribed_authors.all().order_by("id")
         pages = self.paginate_queryset(subscribed_authors)
+
         serializer = UserSubscriptionSerializer(
             pages,
             many=True,
             context={"request": request},
         )
+
         return self.get_paginated_response(serializer.data)
+
