@@ -9,14 +9,14 @@ from .pagination import UsersPagination
 from .serializers import UserSubscriptionSerializer
 
 
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 
 class CustomUserViewSet(UserViewSet): 
     queryset = User.objects.all().order_by("id") 
     pagination_class = UsersPagination 
     
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def subscribe(self, request, id=None): 
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def subscribe(self, request, pk=None): 
         user = request.user 
         author = self.get_object() 
         if user == author: 
@@ -30,8 +30,8 @@ class CustomUserViewSet(UserViewSet):
         serializer = UserSubscriptionSerializer(author, context={"request": request}) 
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
         
-    @detail_route(methods=['delete'], permission_classes=[IsAuthenticated])
-    def unsubscribe(self, request, id=None): 
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
+    def unsubscribe(self, request, pk=None): 
         user = request.user 
         author = self.get_object() 
         subscription = Subscription.objects.filter(user=user, author=author) 
@@ -57,4 +57,3 @@ class CustomUserViewSet(UserViewSet):
         )
 
         return self.get_paginated_response(serializer.data)
-
