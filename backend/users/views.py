@@ -9,51 +9,38 @@ from .pagination import UsersPagination
 from .serializers import UserSubscriptionSerializer
 
 
-class CustomUserViewSet(UserViewSet):
-    queryset = User.objects.all().order_by("id")
-    pagination_class = UsersPagination
+from rest_framework.decorators import detail_route
 
-    @action(detail=True,
-            methods=["post", "delete"],
-            permission_classes=[IsAuthenticated]
-           )
-    def subscribe(self, request, pk=None):
-        author = self.get_object()
-        user = request.user
-
-        if request.method == "POST":
-            if user == author:
-                data = {"errors": "Нельзя подписаться на самого себя"}
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-            subscription, created = Subscription.objects.get_or_create(
-                user=user,
-                author=author,
-            )
-            if not created:
-                data = {"errors": "Вы уже подписаны на данного пользователя"}
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-            serializer = UserSubscriptionSerializer(
-                author,
-                context={"request": request},
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        elif request.method == "DELETE":
-            subscription = Subscription.objects.filter(
-                user=user,
-                author=author,
-            )
-            if subscription.exists():
-                subscription.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-
-            data = {"errors": "Вы не подписаны на данного пользователя"}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+class CustomUserViewSet(UserViewSet): 
+    queryset = User.objects.all().order_by("id") 
+    pagination_class = UsersPagination 
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def subscribe(self, request, id=None): 
+        user = request.user 
+        author = self.get_object() 
+        if user == author: 
+            data = {"errors": "Нельзя подписаться на самого себя"} 
+            return Response(data, status=status.HTTP_400_BAD_REQUEST) 
+        if Subscription.objects.filter(user=user, author=author).exists(): 
+            data = {"errors": "Вы уже подписаны на данного пользователя"} 
+            return Response(data, status=status.HTTP_400_BAD_REQUEST) 
+            
+        Subscription.objects.create(user=user, author=author) 
+        serializer = UserSubscriptionSerializer(author, context={"request": request}) 
+        return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        
+    @detail_route(methods=['delete'], permission_classes=[IsAuthenticated])
+    def unsubscribe(self, request, id=None): 
+        user = request.user 
+        author = self.get_object() 
+        subscription = Subscription.objects.filter(user=user, author=author) 
+        if subscription.exists(): 
+            subscription.delete() 
+            return Response(status=status.HTTP_204_NO_CONTENT) 
+            
+        data = {"errors": "Вы не подписаны на данного пользователя"} 
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, 
             permission_classes=[IsAuthenticated]
