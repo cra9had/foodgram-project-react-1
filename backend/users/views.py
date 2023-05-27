@@ -12,7 +12,7 @@ from .serializers import UserSubscriptionSerializer
 from rest_framework.decorators import action
 
 class CustomUserViewSet(UserViewSet): 
-    queryset = User.objects.all()#.order_by("id") 
+    queryset = User.objects.all().order_by("id") 
     pagination_class = UsersPagination 
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
