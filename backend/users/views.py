@@ -16,7 +16,7 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = UsersPagination 
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def subscribe(self, request, pk=None): 
+    def subscribe(self, request, id=None): 
         user = request.user 
         author = self.get_object() 
         if user == author: 
@@ -31,7 +31,7 @@ class CustomUserViewSet(UserViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
         
     @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
-    def unsubscribe(self, request, pk=None): 
+    def unsubscribe(self, request, id=None): 
         user = request.user 
         author = self.get_object() 
         subscription = Subscription.objects.filter(user=user, author=author) 
@@ -47,7 +47,9 @@ class CustomUserViewSet(UserViewSet):
            )
     def subscriptions(self, request):
         user = request.user
-        subscribed_authors = user.subscribed_authors.all()#.order_by("id")
+        subscribed_authors = User.objects.filter(
+            subscribed_authors__user=user
+        ).order_by("subscribed_authors")
         pages = self.paginate_queryset(subscribed_authors)
 
         serializer = UserSubscriptionSerializer(
