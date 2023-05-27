@@ -12,7 +12,7 @@ from .serializers import UserSubscriptionSerializer
 from rest_framework.decorators import action
 
 class CustomUserViewSet(UserViewSet): 
-    queryset = User.objects.all().order_by("id") 
+    queryset = User.objects.all()#.order_by("id") 
     pagination_class = UsersPagination 
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
@@ -47,7 +47,7 @@ class CustomUserViewSet(UserViewSet):
            )
     def subscriptions(self, request):
         user = request.user
-        subscribed_authors = user.subscribed_authors.all().order_by("id")
+        subscribed_authors = user.subscribed_authors.all()#.order_by("id")
         pages = self.paginate_queryset(subscribed_authors)
 
         serializer = UserSubscriptionSerializer(
