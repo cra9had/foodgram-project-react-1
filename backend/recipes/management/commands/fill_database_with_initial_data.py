@@ -21,7 +21,7 @@ class Command(BaseCommand):
                     measurement_unit=row[1],
                 )
 
-        author_pavel = User.objects.create(
+        author_d = User.objects.create(
             username="proho",
             first_name="Дмитрий",
             last_name="Орловский",
@@ -87,7 +87,7 @@ class Command(BaseCommand):
         with open("data/text_lemonade") as file:
             text_lemonade = file.read().strip()
         recipe_lemonade = Recipe.objects.create(
-            author=author_pavel,
+            author=author_d,
             name="Освежающий лимонад",
             text=text_lemonade,
             cooking_time=60,
@@ -257,7 +257,7 @@ class Command(BaseCommand):
         with open("data/text_brulee") as file:
             text_brulee = file.read().strip()
         recipe_brulee = Recipe.objects.create(
-            author=author_pavel,
+            author=author_d,
             name="Крем-брюле",
             text=text_brulee,
             cooking_time=60,
@@ -409,7 +409,7 @@ class Command(BaseCommand):
         with open("data/text_borsch") as file:
             text_borsch = file.read().strip()
         recipe_borsch = Recipe.objects.create(
-            author=author_pavel,
+            author=author_d,
             name="Борщ",
             text=text_borsch,
             cooking_time=120,
@@ -713,7 +713,7 @@ class Command(BaseCommand):
         with open("data/text_fried_cheese") as file:
             text_fried_cheese = file.read().strip()
         recipe_fried_cheese = Recipe.objects.create(
-            author=author_pavel,
+            author=author_d,
             name="Жареный сыр в панировке",
             text=text_fried_cheese,
             cooking_time=20,
@@ -843,7 +843,7 @@ class Command(BaseCommand):
         with open("data/text_sandwich") as file:
             text_sandwich = file.read().strip()
         recipe_sandwich = Recipe.objects.create(
-            author=author_pavel,
+            author=author_d,
             name='Завтрак Сэндвич "Крок Месье"',
             text=text_sandwich,
             cooking_time=30,
