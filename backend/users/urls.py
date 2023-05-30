@@ -9,6 +9,6 @@ api_users_router = DefaultRouter()
 api_users_router.register("users", CustomUserViewSet)
 
 urlpatterns = [
-    path("", include(api_users_router.urls)),
+    path("users/", include(api_users_router.urls)),
     path("auth/", include("djoser.urls.authtoken")),
 ]
